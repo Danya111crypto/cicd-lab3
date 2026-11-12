@@ -7,3 +7,5 @@ Node.js application with automated linting, testing, LCOV code coverage reportin
 - Patch fix verification
 
 - Minor feature verification
+
+- Major breaking change verification
