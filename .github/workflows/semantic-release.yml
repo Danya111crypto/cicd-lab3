@@ -1,0 +1,59 @@
+name: Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Automated Semantic Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          semantic_version: 21
+          extra_plugins: |
+            @semantic-release/changelog@6.0.3
+            @semantic-release/git@10.0.1
+            conventional-changelog-conventionalcommits@6.1.0
+
+      - name: Output release summary
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          echo "Published version: ${{ steps.semantic.outputs.new_release_version }}"
+          echo "Major: ${{ steps.semantic.outputs.new_release_major_version }}"
+          echo "Minor: ${{ steps.semantic.outputs.new_release_minor_version }}"
+          echo "Patch: ${{ steps.semantic.outputs.new_release_patch_version }}"
