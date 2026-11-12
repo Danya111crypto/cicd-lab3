@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/Danya111crypto/cicd-lab3/compare/v1.1.0...v2.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* standardized response payload structure
+
+### Features
+
+* update API response contract ([44a22ec](https://github.com/Danya111crypto/cicd-lab3/commit/44a22ecb3c7fbdee9ece44d8ef8aa8c20c10a9a5))
+
 ## [1.1.0](https://github.com/Danya111crypto/cicd-lab3/compare/v1.0.1...v1.1.0) (2026-11-12)
 
 
