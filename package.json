@@ -4,11 +4,17 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "node build.js"
   },
   "devDependencies": {
     "eslint": "^10.14.0",
     "jest": "^30.5.2"
+  },
+  "jest": {
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ]
   }
 }
