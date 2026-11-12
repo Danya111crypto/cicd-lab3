@@ -1,0 +1,79 @@
+name: Monorepo Selective CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  detect-changes:
+    name: Detect Changed Services
+    runs-on: ubuntu-latest
+    outputs:
+      service_a: ${{ steps.filter.outputs.service_a }}
+      service_b: ${{ steps.filter.outputs.service_b }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Filter changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            service_a:
+              - 'packages/service-a/**'
+            service_b:
+              - 'packages/service-b/**'
+
+  service-a-ci:
+    name: Build & Test Service A
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.service_a == 'true'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Test Service A
+        working-directory: packages/service-a
+        run: npm test
+
+      - name: Build Service A
+        working-directory: packages/service-a
+        run: npm run build
+
+  service-b-ci:
+    name: Build & Test Service B
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.service_b == 'true'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Test Service B
+        working-directory: packages/service-b
+        run: npm test
+
+      - name: Build Service B
+        working-directory: packages/service-b
+        run: npm run build
