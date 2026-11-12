@@ -1,4 +1,5 @@
 function sum(a, b) {
-  return a + b;
+  const unusedVar = 42;
+  return a - b;
 }
 module.exports = sum;
