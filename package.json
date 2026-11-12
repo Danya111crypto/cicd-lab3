@@ -1,0 +1,13 @@
+{
+  "name": "cicd-lab3",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "eslint": "^10.14.0",
+    "jest": "^30.5.2"
+  }
+}
