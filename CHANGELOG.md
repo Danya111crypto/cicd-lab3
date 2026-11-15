@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/Danya111crypto/cicd-lab3/compare/v2.0.0...v2.1.0) (2026-11-15)
+
+
+### Features
+
+* add monorepo packages and selective CI workflow ([6407a20](https://github.com/Danya111crypto/cicd-lab3/commit/6407a208b0fde32eb2d568928cd7c95e9a5d80bb))
+* **service-a:** update user status payload ([b37f6eb](https://github.com/Danya111crypto/cicd-lab3/commit/b37f6ebf708739870c13a9bffa1375f89c43847c))
+
+
+### Bug Fixes
+
+* **sonar:** exclude monorepo packages and configure SonarCloud keys ([bba1a91](https://github.com/Danya111crypto/cicd-lab3/commit/bba1a91e0baf85674fbf23a5e9f12a576cdf580e))
+
 ## [2.0.0](https://github.com/Danya111crypto/cicd-lab3/compare/v1.1.0...v2.0.0) (2026-11-12)
 
 
