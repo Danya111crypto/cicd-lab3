@@ -1,21 +1,8 @@
-# ???? 1: ???????? ??????????
-FROM node:18-alpine AS builder
+FROM node:22-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# ???? 2: ????????? ???????????? ?????
-FROM node:18-alpine AS production
-WORKDIR /app
-ENV NODE_ENV=production \
-    PORT=3000
-
-COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-COPY --from=builder /app/dist ./dist
-
+RUN npm ci --omit=dev
+COPY index.js build.js ./
+RUN npm run build && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 EXPOSE 3000
-USER node
-CMD ["node", "dist/index.js"]
+CMD ["node", "index.js"]
