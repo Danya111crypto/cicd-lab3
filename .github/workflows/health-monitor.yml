@@ -1,0 +1,67 @@
+name: Scheduled Production Health Monitor
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      check_path:
+        description: 'Endpoint path to verify'
+        required: true
+        default: '/'
+        type: string
+      expected_status:
+        description: 'Expected HTTP status code'
+        required: true
+        default: '200'
+        type: choice
+        options:
+          - '200'
+          - '204'
+
+jobs:
+  synthetic-health-check:
+    name: Synthetic Endpoint Monitoring
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check production endpoint availability and latency
+        id: probe
+        env:
+          BASE_URL: ${{ secrets.PRODUCTION_URL }}
+          TARGET_PATH: ${{ github.event.inputs.check_path || '/' }}
+          EXPECTED: ${{ github.event.inputs.expected_status || '200' }}
+        run: |
+          TARGET_URL="${BASE_URL%/}${TARGET_PATH}"
+          echo "Probing $TARGET_URL (expected HTTP $EXPECTED)..."
+
+          METRICS=$(curl -s -o response.json -w "%{http_code} %{time_total}" --max-time 30 "$TARGET_URL")
+          HTTP_CODE=$(echo "$METRICS" | awk '{print $1}')
+          LATENCY=$(echo "$METRICS" | awk '{print $2}')
+          BODY=$(cat response.json)
+
+          echo "http_code=$HTTP_CODE" >> "$GITHUB_OUTPUT"
+          echo "latency=$LATENCY" >> "$GITHUB_OUTPUT"
+          echo "target_url=$TARGET_URL" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Production Synthetic Monitoring Report"
+            echo ""
+            echo "| Metric | Value |"
+            echo "| :--- | :--- |"
+            echo "| **Target URL** | \`$TARGET_URL\` |"
+            echo "| **Trigger Event** | \`${{ github.event_name }}\` |"
+            echo "| **Expected Status** | \`$EXPECTED\` |"
+            echo "| **Actual HTTP Status** | \`$HTTP_CODE\` |"
+            echo "| **Response Latency** | \`${LATENCY}s\` |"
+            echo ""
+            echo "**Response Payload:**"
+            echo "\`\`\`json"
+            echo "$BODY"
+            echo "\`\`\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$HTTP_CODE" != "$EXPECTED" ]; then
+            echo "Health check failed: expected $EXPECTED, got $HTTP_CODE"
+            exit 1
+          fi
