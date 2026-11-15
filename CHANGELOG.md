@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2](https://github.com/Danya111crypto/cicd-lab3/compare/v2.1.1...v2.1.2) (2026-11-15)
+
+
+### Bug Fixes
+
+* **docker:** upgrade to node:22-alpine and remove npm to resolve CVE-2026-59873 ([9cfc48b](https://github.com/Danya111crypto/cicd-lab3/commit/9cfc48b78e1048c9031216362882a012a4b66e57))
+
 ## [2.1.1](https://github.com/Danya111crypto/cicd-lab3/compare/v2.1.0...v2.1.1) (2026-11-15)
 
 
