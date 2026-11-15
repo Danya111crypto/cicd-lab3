@@ -1,0 +1,60 @@
+name: Supply Chain SBOM & Concurrency Control
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-sbom:
+    name: Generate CycloneDX & SPDX SBOM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate CycloneDX SBOM (Production)
+        run: npm sbom --omit=dev --sbom-format cyclonedx > sbom-cyclonedx.json
+
+      - name: Generate SPDX SBOM (Full Dependency Tree)
+        run: npm sbom --sbom-format spdx > sbom-spdx.json
+
+      - name: Summarize SBOM inventory in Step Summary
+        run: |
+          CDX_COUNT=$(node -e "const d=require('./sbom-cyclonedx.json'); console.log((d.components||[]).length)")
+          SPDX_COUNT=$(node -e "const d=require('./sbom-spdx.json'); console.log((d.packages||[]).length)")
+          {
+            echo "## Software Bill of Materials (SBOM) Report"
+            echo ""
+            echo "| Standard | File Name | Scope | Components / Packages |"
+            echo "| :--- | :--- | :--- | :--- |"
+            echo "| **CycloneDX** | \`sbom-cyclonedx.json\` | Production (\`--omit=dev\`) | \`$CDX_COUNT\` |"
+            echo "| **SPDX** | \`sbom-spdx.json\` | Full Tree (Prod + Dev) | \`$SPDX_COUNT\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-manifests-${{ github.run_number }}
+          path: |
+            sbom-cyclonedx.json
+            sbom-spdx.json
+          retention-days: 30
