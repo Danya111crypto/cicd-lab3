@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1](https://github.com/Danya111crypto/cicd-lab3/compare/v2.1.0...v2.1.1) (2026-11-15)
+
+
+### Bug Fixes
+
+* **security:** use master ref for aquasecurity/trivy-action ([5cea5d1](https://github.com/Danya111crypto/cicd-lab3/commit/5cea5d124b84d8658e707f1ad8115650aeef6dee))
+
 ## [2.1.0](https://github.com/Danya111crypto/cicd-lab3/compare/v2.0.0...v2.1.0) (2026-11-15)
 
 
