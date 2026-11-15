@@ -1,0 +1,22 @@
+name: Modular CI Pipeline (Reusable + Composite)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  check-node-20:
+    name: Modular Check Node 20
+    uses: ./.github/workflows/reusable-build-test.yml
+    with:
+      node-version: '20.x'
+      run-build: false
+
+  check-node-22:
+    name: Modular Check Node 22 + Build
+    uses: ./.github/workflows/reusable-build-test.yml
+    with:
+      node-version: '22.x'
+      run-build: true

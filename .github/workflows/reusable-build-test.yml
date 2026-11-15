@@ -1,0 +1,33 @@
+name: Reusable Build and Test Template
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: false
+        type: string
+        default: '22.x'
+      run-build:
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  verify:
+    name: Verify (Node ${{ inputs.node-version }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and Dependencies (Composite Action)
+        uses: ./.github/actions/setup-node-app
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Build distribution bundle
+        if: ${{ inputs.run-build }}
+        run: npm run build
